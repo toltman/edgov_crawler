@@ -36,13 +36,16 @@ class EdgovSpider(scrapy.Spider):
         'https://nces.ed.gov/programs/digest/d18/tables/dt18_326.10.asp',
     ]
 
+    custom_settings = {
+        'DEPTH_LIMIT': 1,
+        'DEPTH_PRIORITY': 1,
+    }
+
     def parse(self, response):
-        for link in edgov_extractor.extract_links(response):
-            yield {
-                "link": link.url,
-            }
         for link in data_extractor.extract_links(response):
             if is_data_file(link.url):
                 yield {
-                    "data": link.url
+                    response.url: link.url
                 }
+        for next_page in edgov_extractor.extract_links(response):
+            yield response.follow(next_page, self.parse)
