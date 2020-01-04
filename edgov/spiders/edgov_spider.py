@@ -1,15 +1,17 @@
 import scrapy
+from scrapy.linkextractors import LinkExtractor
 
 
 class EdgovSpider(scrapy.Spider):
     name = "edgov"
 
     start_urls = [
-        'http://ed.gov',
+        'http://www.ed.gov',
     ]
 
     def parse(self, response):
-        for link in response.css('a::attr(href)'):
+        le = LinkExtractor(allow_domains='ed.gov')
+        for link in le.extract_links(response):
             yield {
-                "link": response.urljoin(link.get()),
+                "link": link.url,
             }
