@@ -9,6 +9,7 @@ FILE_TYPES = [
     '.sas',
     '.dat',
     '.spss',
+    '.sps',
     '.db',
     '.sql',
     '.xml',
@@ -34,14 +35,15 @@ class EdgovSpider(scrapy.Spider):
     name = "edgov"
 
     start_urls = [
-        'https://nces.ed.gov/programs/digest/d18/tables/dt18_326.10.asp',
+        'https://www.ed.gov',
     ]
 
     custom_settings = {
-        'DEPTH_LIMIT': 10,
+        'DEPTH_LIMIT': 0,
         'DEPTH_PRIORITY': 1,
         'SCHEDULER_DISK_QUEUE': 'scrapy.squeues.PickleFifoDiskQueue',
         'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
+        'SCHEDULER_DEBUG': True,
         'LOG_FILE': 'edgov.log'
     }
 
