@@ -37,15 +37,18 @@ class EdgovSpider(scrapy.Spider):
     ]
 
     custom_settings = {
-        'DEPTH_LIMIT': 1,
+        'DEPTH_LIMIT': 10,
         'DEPTH_PRIORITY': 1,
+        'SCHEDULER_DISK_QUEUE': 'scrapy.squeues.PickleFifoDiskQueue',
+        'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
     }
 
     def parse(self, response):
         for link in data_extractor.extract_links(response):
             if is_data_file(link.url):
                 yield {
-                    response.url: link.url
+                    'link': response.url,
+                    'data_file': link.url
                 }
         for next_page in edgov_extractor.extract_links(response):
             yield response.follow(next_page, self.parse)
