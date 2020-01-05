@@ -1,4 +1,5 @@
 import scrapy
+import logging
 from scrapy.linkextractors import LinkExtractor
 
 # list of data types
@@ -41,7 +42,10 @@ class EdgovSpider(scrapy.Spider):
         'DEPTH_PRIORITY': 1,
         'SCHEDULER_DISK_QUEUE': 'scrapy.squeues.PickleFifoDiskQueue',
         'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
+        'LOG_FILE': 'edgov.log'
     }
+
+    logging.getLogger().addHandler(logging.StreamHandler())
 
     def parse(self, response):
         for link in data_extractor.extract_links(response):
