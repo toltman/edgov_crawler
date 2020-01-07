@@ -15,12 +15,21 @@ FILE_TYPES = [
     '.xml',
     '.xlsx',
     '.zip',
+    '.sav',
+    '.dta',
+    '.do',
+    '.r',
+    '.rdata',
+    '.rda',
+    '.sd2',
+    '.sd7',
+    '.sas7bdat',
 ]
 
 
 def is_data_file(link):
     # Returns True if the file type of link matches any of the data file types
-    return any([str(link).endswith(data_type) for data_type in FILE_TYPES])
+    return any([str(link).lower().endswith(data_type) for data_type in FILE_TYPES])
 
 
 edgov_extractor = LinkExtractor(allow_domains='ed.gov')
@@ -29,6 +38,23 @@ data_extractor = LinkExtractor(
     allow_domains='ed.gov',
     deny_extensions=[]
 )
+
+logger = logging.getLogger()
+
+debug_log = logging.FileHandler('edgov.log')
+debug_log.setLevel(logging.DEBUG)
+
+error_log = logging.FileHandler('edgov_error_log.log')
+error_log.setLevel(logging.ERROR)
+
+formatter = logging.Formatter(
+    '%(asctime)s [%(name)s] %(levelname)s: %(message)s')
+
+debug_log.setFormatter(formatter)
+error_log.setFormatter(formatter)
+
+logger.addHandler(debug_log)
+logger.addHandler(error_log)
 
 
 class EdgovSpider(scrapy.Spider):
@@ -44,10 +70,7 @@ class EdgovSpider(scrapy.Spider):
         'SCHEDULER_DISK_QUEUE': 'scrapy.squeues.PickleFifoDiskQueue',
         'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
         'SCHEDULER_DEBUG': True,
-        'LOG_FILE': 'edgov.log'
     }
-
-    logging.getLogger().addHandler(logging.StreamHandler())
 
     def parse(self, response):
         for link in data_extractor.extract_links(response):
