@@ -11,4 +11,4 @@ with open("edgov.log") as logfile:
             hostnames.append(urlparse(m.group(1)).hostname)
 
 s = pd.Series(hostnames)
-print(s.value_counts())
+print(s.value_counts().to_string())
