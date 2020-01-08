@@ -31,7 +31,8 @@ FILE_TYPES = [
     '.mdb',
     '.accdb',
     '.txt',
-    '.dct'
+    '.dct',
+    '.tsv'
 ]
 
 
