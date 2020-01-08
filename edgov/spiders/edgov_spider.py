@@ -33,10 +33,15 @@ FILE_TYPES = [
 
 def is_data_file(link):
     # Returns True if the file type of link matches any of the data file types
+    # not case sensitive
     return any([str(link).lower().endswith(data_type) for data_type in FILE_TYPES])
 
 
-edgov_extractor = LinkExtractor(allow_domains='ed.gov')
+# link extractor for ed.gov domain
+edgov_extractor = LinkExtractor(
+    allow_domains='ed.gov',
+    deny_domains=['www.eric.ed.gov', 'eric.ed.gov']
+)
 
 data_extractor = LinkExtractor(
     allow_domains='ed.gov',
@@ -85,14 +90,29 @@ class EdgovSpider(scrapy.Spider):
             yield scrapy.Request(next_page, self.parse, errback=self.parse_error)
 
     def parse_error(self, failure):
-        logger.error(
-            'This is an error' +
-            repr(failure) +
-            failure.request.meta
-        )
+
+        if failure.check(HttpError):
+            response = failure.value.response
+            with open('http_errors.csv', 'a+', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow([response.status, response.url])
+
+        elif failure.check(DNSLookupError):
+            # this is the original request
+            request = failure.request
+            with open('errors.csv', 'a+', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['DNSLookupError', request.url])
+
+        elif failure.check(TimeoutError, TCPTimedOutError):
+            request = failure.request
+            with open('errors.csv', 'a+', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['TimeoutError', request.url])
 
 
 class ErrbackSpider(scrapy.Spider):
+    # this class is for testing
     name = "errback_example"
     start_urls = [
         "http://www.httpbin.org/",              # HTTP 200 expected
@@ -122,11 +142,7 @@ class ErrbackSpider(scrapy.Spider):
         # you may need the failure's type:
 
         if failure.check(HttpError):
-            # these exceptions come from HttpError spider middleware
-            # you can get the non-200 response
             response = failure.value.response
-            self.logger.error('HttpError on %s', response.url)
-            self.logger.error('Status: %s', response.status)
             with open('http_error.csv', 'a+', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow([response.url, response.status])
