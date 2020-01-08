@@ -28,6 +28,10 @@ FILE_TYPES = [
     '.sd2',
     '.sd7',
     '.sas7bdat',
+    '.mdb',
+    '.accdb',
+    '.txt',
+    '.dct'
 ]
 
 
@@ -57,7 +61,8 @@ error_log = logging.FileHandler('edgov_error_log.log')
 error_log.setLevel(logging.ERROR)
 
 formatter = logging.Formatter(
-    '%(asctime)s [%(name)s] %(levelname)s: %(message)s')
+    '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
+)
 
 debug_log.setFormatter(formatter)
 error_log.setFormatter(formatter)
