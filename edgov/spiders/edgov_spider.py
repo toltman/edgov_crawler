@@ -45,7 +45,34 @@ def is_data_file(link):
 # link extractor for ed.gov domain
 edgov_extractor = LinkExtractor(
     allow_domains='ed.gov',
-    deny_domains=['www.eric.ed.gov', 'eric.ed.gov']
+    deny_domains=['www.eric.ed.gov', 'eric.ed.gov'],
+    deny_extensions=[
+        # archives
+        '7z', '7zip', 'bz2', 'rar', 'tar', 'tar.gz', 'xz', 'zip',
+
+        # images
+        'mng', 'pct', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'pst', 'psp', 'tif',
+        'tiff', 'ai', 'drw', 'dxf', 'eps', 'ps', 'svg', 'cdr', 'ico',
+
+        # audio
+        'mp3', 'wma', 'ogg', 'wav', 'ra', 'aac', 'mid', 'au', 'aiff',
+
+        # video
+        '3gp', 'asf', 'asx', 'avi', 'mov', 'mp4', 'mpg', 'qt', 'rm', 'swf', 'wmv',
+        'm4a', 'm4v', 'flv', 'webm',
+
+        # office suites
+        'xls', 'xlsx', 'ppt', 'pptx', 'pps', 'doc', 'docx', 'odt', 'ods', 'odg',
+        'odp',
+
+        # other
+        'css', 'pdf', 'exe', 'bin', 'rss', 'dmg', 'iso', 'apk',
+
+        # added
+        'csv', 'sas', 'dat', 'spss', 'sps', 'db', 'sql', 'xml', 'zip', 'sav',
+        'dta', 'do', 'r', 'rdata', 'rda', 'sd2', 'sd7', 'sas7bdat', 'mdb', 'accdb',
+        'txt', 'dct', 'tsv'
+    ]
 )
 
 data_extractor = LinkExtractor(
@@ -75,7 +102,7 @@ logger.addHandler(error_log)
 class EdgovSpider(scrapy.Spider):
     name = "edgov"
 
-    start_urls = ['http://www.ed.gov']
+    start_urls = ['https://nces.ed.gov/ecls/dataproducts.asp']
 
     custom_settings = {
         'DEPTH_LIMIT': 0,
@@ -83,6 +110,8 @@ class EdgovSpider(scrapy.Spider):
         'SCHEDULER_DISK_QUEUE': 'scrapy.squeues.PickleFifoDiskQueue',
         'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
         'SCHEDULER_DEBUG': True,
+        'DOWNLOAD_MAXSIZE': 5000000,
+        'DOWNLOAD_WARNSIZE': 300000
     }
 
     def parse(self, response):
