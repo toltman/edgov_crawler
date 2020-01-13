@@ -44,8 +44,15 @@ def is_data_file(link):
 
 # link extractor for ed.gov domain
 edgov_extractor = LinkExtractor(
+    deny=r'https://nces.ed.gov/COLLEGENAVIGATOR\.*',
     allow_domains='ed.gov',
-    deny_domains=['www.eric.ed.gov', 'eric.ed.gov'],
+    deny_domains=[
+        'www.eric.ed.gov', 
+        'eric.ed.gov',
+        'eddataexpress.ed.gov', 
+        'ocrcas.ed.gov', 
+        'statesupportnetwork.ed.gov'
+    ],
     deny_extensions=[
         # archives
         '7z', '7zip', 'bz2', 'rar', 'tar', 'tar.gz', 'xz', 'zip',
@@ -85,24 +92,24 @@ logger = logging.getLogger()
 debug_log = logging.FileHandler('edgov.log')
 debug_log.setLevel(logging.DEBUG)
 
-error_log = logging.FileHandler('edgov_error_log.log')
-error_log.setLevel(logging.ERROR)
+# error_log = logging.FileHandler('edgov_error_log.log')
+# error_log.setLevel(logging.ERROR)
 
 formatter = logging.Formatter(
     '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
 )
 
 debug_log.setFormatter(formatter)
-error_log.setFormatter(formatter)
+# error_log.setFormatter(formatter)
 
 logger.addHandler(debug_log)
-logger.addHandler(error_log)
+# logger.addHandler(error_log)
 
 
 class EdgovSpider(scrapy.Spider):
     name = "edgov"
 
-    start_urls = ['https://nces.ed.gov/ecls/dataproducts.asp']
+    start_urls = ['https://www.ed.gov/']
 
     custom_settings = {
         'DEPTH_LIMIT': 0,
@@ -111,7 +118,8 @@ class EdgovSpider(scrapy.Spider):
         'SCHEDULER_MEMORY_QUEUE': 'scrapy.squeues.FifoMemoryQueue',
         'SCHEDULER_DEBUG': True,
         'DOWNLOAD_MAXSIZE': 5000000,
-        'DOWNLOAD_WARNSIZE': 300000
+        'DOWNLOAD_WARNSIZE': 3000000,
+        'MEMDEBUG_ENABLED': True
     }
 
     def parse(self, response):
