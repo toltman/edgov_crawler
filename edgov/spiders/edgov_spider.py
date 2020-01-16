@@ -51,7 +51,8 @@ edgov_extractor = LinkExtractor(
         'eric.ed.gov',
         'eddataexpress.ed.gov', 
         'ocrcas.ed.gov', 
-        'statesupportnetwork.ed.gov'
+        'statesupportnetwork.ed.gov',
+        'datainventory.ed.gov'
     ],
     deny_extensions=[
         # archives
